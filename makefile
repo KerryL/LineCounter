@@ -7,10 +7,10 @@ TARGET = LineCounter
 
 # Directories in which to search for source files
 DIRS = \
-	$(PWD)
+	$(CURDIR)/src/
 
 # Source files
-SRC = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.cpp))
+SRC = $(foreach dir, $(DIRS), $(wildcard $(dir)*.cpp))
 
 # Object files
 OBJS = $(addprefix $(OBJDIR),$(SRC:.cpp=.o))
@@ -20,6 +20,7 @@ OBJS = $(addprefix $(OBJDIR),$(SRC:.cpp=.o))
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
+	$(MKDIR) $(BINDIR)
 	@echo "objs: " $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -o $(BINDIR)$@
 

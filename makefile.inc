@@ -23,7 +23,7 @@ LIBDIRS = $(addprefix -L,$(LIBDIRS_TEMP))
 # DO NOT include the -l prefix to these libraries - it
 # will be added automatically
 LIBS_TEMP = \
-	wx_gtk2d_gl-2.8
+	
 
 LIBS = $(addprefix -l,$(LIBS_TEMP))
 
@@ -31,16 +31,16 @@ LIBS = $(addprefix -l,$(LIBS_TEMP))
 CC = g++
 
 # Compiler flags
-CFLAGS = -g -Wall $(INCDIRS) `wx-config --cppflags` -DwxUSE_GUI=0 -I./include
+CFLAGS = -g -Wall $(INCDIRS) `wx-config --cppflags` -DwxUSE_GUI=0
 
 # Linker flags
 LDFLAGS = $(LIBDIRS) $(LIBS) `wx-config --libs`
 
 # Object file output directory
-OBJDIR = $(PWD)/.obj/
+OBJDIR = $(CURDIR)/.obj/
 
 # Binary file output directory
-BINDIR = $(PWD)/
+BINDIR = $(CURDIR)/bin/
 
 # Method for creating directories
 MKDIR = mkdir -p

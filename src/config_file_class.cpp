@@ -75,7 +75,7 @@ CONFIG_FILE::CONFIG_FILE(const wxString &fileName)
 			size_t startOfData = line.find_first_not_of(" ",
 				locationOfFirstSpace);
 			data = line.substr(startOfData,
-				line.length() - startOfData);
+				line.length() - startOfData - 1);
 			field = line.substr(0, locationOfFirstSpace);
 
 			// Assign the data to the correct variable based on the

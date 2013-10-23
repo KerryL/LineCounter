@@ -1,0 +1,24 @@
+# Ignore MSVC++ binary and object directories
+Debug/
+Release/
+ipch/
+
+*.suo
+*.sdf
+*.opensdf
+
+# Ignore GKT directories
+bin/
+.obj/
+nbproject/private/
+
+*.o
+.src/
+*.log
+*.csv
+
+# Ignore CodeLite stuff
+*.workspace*
+*.tags
+*.project
+.clang
