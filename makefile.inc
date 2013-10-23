@@ -31,7 +31,7 @@ LIBS = $(addprefix -l,$(LIBS_TEMP))
 CC = g++
 
 # Compiler flags
-CFLAGS = -g -Wall $(INCDIRS) `wx-config --cppflags` -DwxUSE_GUI=0
+CFLAGS = -g -Wall -Werror -Wextra $(INCDIRS) `wx-config --cppflags` -DwxUSE_GUI=0
 
 # Linker flags
 LDFLAGS = $(LIBDIRS) $(LIBS) `wx-config --libs`

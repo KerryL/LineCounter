@@ -4,34 +4,37 @@
 // Desc:  Traverses directory structures searching for files in which
 //        lines should be counted and added to the total count.
 
-#ifndef _TRAVERSER_H_
-#define _TRAVERSER_H_
+#ifndef TRAVERSER_H_
+#define TRAVERSER_H_
+
+// Standard C++ headers
+#include <string>
+#include <vector>
 
 // wxWidgets headers
 #include <wx/dir.h>
 
-class TRAVERSER : public wxDirTraverser
+// Local headers
+#include "lineCounter.h"
+
+class Traverser : public wxDirTraverser
 {
 public:
 	// Constructor
-	TRAVERSER(const wxArrayString &_extensions);
+	Traverser(const std::vector<std::string> &extensions,
+		const std::vector<std::string> &commentIndicators,
+		const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators);
+	virtual ~Traverser() {};
 
-	virtual wxDirTraverseResult OnFile(const wxString &filename);
-	virtual wxDirTraverseResult OnDir(const wxString &dirname);
+	virtual wxDirTraverseResult OnFile(const wxString &fileName);
+	virtual wxDirTraverseResult OnDir(const wxString &directoryName);
 
-	const unsigned int GetBlankCount(void) { return blankLines; };
-	const unsigned int GetCommentCount(void) { return commentLines; };
-	const unsigned int GetCodeCount(void) { return codeLines; };
-
-	const unsigned int GetFileCount(void) { return fileCount; };
+	const LineCounter::Statistics GetStatistics(void) const { return counter.GetStatistics(); };
 
 private:
-	// List of extensions to consider (ignore all else)
-	const wxArrayString &extensions;
+	const std::vector<std::string> extensions;// List of extensions to parse
 
-	// Counts for the current directory path
-	unsigned int blankLines, commentLines, codeLines;
-	unsigned int fileCount;
+	LineCounter counter;
 };
 
-#endif// _TRAVERSER_H_
+#endif// TRAVERSER_H_

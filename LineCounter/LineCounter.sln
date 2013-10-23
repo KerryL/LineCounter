@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LineCounter", "LineCounter.vcxproj", "{F9B1C5A3-192C-4955-94C7-5CBB1B6E5A5F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SourceParserTest", "SourceParserTest\SourceParserTest.vcxproj", "{BF0D232C-99DA-4A93-A583-70166F9D1AEC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StringTrimmerTest", "StringTrimmerTest\StringTrimmerTest.vcxproj", "{21F71499-B78B-48F6-8A5D-58838D279AFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F9B1C5A3-192C-4955-94C7-5CBB1B6E5A5F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F9B1C5A3-192C-4955-94C7-5CBB1B6E5A5F}.Debug|Win32.Build.0 = Debug|Win32
+		{F9B1C5A3-192C-4955-94C7-5CBB1B6E5A5F}.Release|Win32.ActiveCfg = Release|Win32
+		{F9B1C5A3-192C-4955-94C7-5CBB1B6E5A5F}.Release|Win32.Build.0 = Release|Win32
+		{BF0D232C-99DA-4A93-A583-70166F9D1AEC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BF0D232C-99DA-4A93-A583-70166F9D1AEC}.Debug|Win32.Build.0 = Debug|Win32
+		{BF0D232C-99DA-4A93-A583-70166F9D1AEC}.Release|Win32.ActiveCfg = Release|Win32
+		{BF0D232C-99DA-4A93-A583-70166F9D1AEC}.Release|Win32.Build.0 = Release|Win32
+		{21F71499-B78B-48F6-8A5D-58838D279AFE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{21F71499-B78B-48F6-8A5D-58838D279AFE}.Debug|Win32.Build.0 = Debug|Win32
+		{21F71499-B78B-48F6-8A5D-58838D279AFE}.Release|Win32.ActiveCfg = Release|Win32
+		{21F71499-B78B-48F6-8A5D-58838D279AFE}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
