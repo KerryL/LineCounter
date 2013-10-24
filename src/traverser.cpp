@@ -27,6 +27,7 @@ using namespace std;
 //		extensions				= const std::vector<std::string>&
 //		commentIndicators		= const std::vector<std::string>&
 //		blockCommentIndicators	= const std::vector<std::pair<std::string, std::string> >&
+//		continuationIndicators	= const std::vector<std::string>&
 //
 // Output Arguments:
 //		None
@@ -37,8 +38,9 @@ using namespace std;
 //==========================================================================
 Traverser::Traverser(const std::vector<std::string> &extensions,
 	const std::vector<std::string> &commentIndicators,
-	const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators) :
-		extensions(extensions), counter(commentIndicators, blockCommentIndicators)
+	const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators,
+	const std::vector<std::string> &continuationIndicators) : extensions(extensions),
+	counter(commentIndicators, blockCommentIndicators, continuationIndicators)
 {
 }
 

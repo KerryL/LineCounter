@@ -112,13 +112,10 @@ int LineCounterApplication::Run(int argc, char *argv[])
 	if (!UpdateConfiguration(argv[1]))
 		return 1;
 
-	traverser = new Traverser(info.extensionList, info.commentList, info.blockCommentList);
+	traverser = new Traverser(info.extensionList, info.commentList,
+		info.blockCommentList, info.continuationList);
 	ParseFiles();
 	PrintCodeStatistics();
-
-#ifdef WIN32
-	system("PAUSE");
-#endif
 
 	return 0;
 }
@@ -165,7 +162,7 @@ bool LineCounterApplication::UpdateConfiguration(std::string fileName)
 	LineCounterConfigFile config;
 	if (!config.ReadConfiguration(fileName))
 	{
-		cout << "Failed to read configuration from:  '" << fileName << "'" << endl;
+		cout << "Problem reading configuration from:  '" << fileName << "'" << endl;
 		return false;
 	}
 

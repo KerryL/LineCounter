@@ -5,6 +5,7 @@
 
 // Standard C++ headers
 #include <algorithm>
+#include <cassert>
 
 // Local headers
 #include "sourceParser.h"
@@ -19,6 +20,7 @@
 // Input Arguments:
 //		commentIndicators		= const std::vector<std::string>&
 //		blockCommentIndicators	= const std::vector<std::pair<std::string, std::string> >&
+//		continuationIndicators	= const std::vector<std::string>&
 //
 // Output Arguments:
 //		None
@@ -28,9 +30,11 @@
 //
 //==========================================================================
 SourceParser::SourceParser(const std::vector<std::string> &commentIndicators,
-	const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators)
+	const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators,
+	const std::vector<std::string> &continuationIndicators)
 	: commentIndicators(commentIndicators),
-	blockCommentIndicators(blockCommentIndicators)
+	blockCommentIndicators(blockCommentIndicators),
+	continuationIndicators(continuationIndicators)
 {
 	Reset();
 }
@@ -53,47 +57,79 @@ SourceParser::SourceParser(const std::vector<std::string> &commentIndicators,
 //==========================================================================
 SourceParser::PositionState SourceParser::ParseLine(std::string line)
 {
-	line = StringTrimmer::Trim(line);
-	if (line.empty())
-		return PositionWhitespace;
+	// Only left trim so we don't get the line continuation stuff wrong
+	line = StringTrimmer::LeftTrim(line);
 
 	size_t location;
 	switch (state)
 	{
 	case PositionBlockComment:
-		if ((location = LineContainsString(line, blockEndIndicator)) != std::string::npos)
+		if (line.empty())
+			return PositionWhitespace;
+		else if ((location = LineContainsString(line, blockEndIndicator)) != std::string::npos)
 		{
 			state = PositionComment;
-			line = line.substr(location);
+			line = StringTrimmer::LeftTrim(line.substr(location));
 			if (!line.empty())
-				state = ParseLine(line);
+			{
+				if (ParseLine(line) == PositionCode)
+					return PositionCode;
+			}
 		}
-		// Otherwise - no change to state, we're still in a block comment
+		// No change to state - stay in the comment
+		break;
+
+	case PositionContinuingComment:
+		if (line.empty())
+			state = PositionWhitespace;
+		else if (!LineEndsWithContinuation(line))
+			state = PositionComment;
 		break;
 
 	case PositionComment:
 	case PositionCode:
 	case PositionWhitespace:
-		if (LineStartsWithSingleLineComment(line))
-			state = PositionComment;
+		if (line.empty())
+			state = PositionWhitespace;
+		else if (LineStartsWithSingleLineComment(line))
+		{
+			if (LineEndsWithContinuation(line))
+				state = PositionContinuingComment;
+			else
+				state = PositionComment;
+		}
 		else if ((location = LineStartsWithBlockCommentStart(line, blockEndIndicator)) != std::string::npos)
 		{
 			state = PositionBlockComment;
 			line = line.substr(location);
 			if (!line.empty())
-				ParseLine(line);
+			{
+				if (ParseLine(line) == PositionCode)
+					return PositionCode;
+			}
 		}
 		else
 		{
 			if ((location = LineContainsBlockCommentStart(line, blockEndIndicator)) != std::string::npos)
 			{
 				state = PositionBlockComment;
-				line = line.substr(location);
+				line = StringTrimmer::LeftTrim(line.substr(location));
 				ParseLine(line);
+				return PositionCode;
+			}
+			else if (LineContainsSingleLineComment(line) &&
+				LineEndsWithContinuation(line))
+			{
+				state = PositionContinuingComment;
 				return PositionCode;
 			}
 			state = PositionCode;
 		}
+
+		break;
+
+	default:
+		assert(false);
 	}
 
 	return state;
@@ -122,6 +158,63 @@ bool SourceParser::LineStartsWithSingleLineComment(const std::string &line) cons
 	for (i = 0; i < commentIndicators.size(); i++)
 	{
 		if (line.find(commentIndicators[i]) == 0)
+			return true;
+	}
+
+	return false;
+}
+
+//==========================================================================
+// Class:			SourceParser
+// Function:		LineContainsSingleLineComment
+//
+// Description:		Determines if the line contains a single-line comment indicator.
+//
+// Input Arguments:
+//		line	= const std::string&
+//
+// Output Arguments:
+//		None
+//
+// Return Value:
+//		bool
+//
+//==========================================================================
+bool SourceParser::LineContainsSingleLineComment(const std::string &line) const
+{
+	unsigned int i;
+	for (i = 0; i < commentIndicators.size(); i++)
+	{
+		if (line.find(commentIndicators[i]) != std::string::npos)
+			return true;
+	}
+
+	return false;
+}
+
+//==========================================================================
+// Class:			SourceParser
+// Function:		LineEndsWithContinuation
+//
+// Description:		Determines if the line ends with a line continuation indicator.
+//
+// Input Arguments:
+//		line	= const std::string&
+//
+// Output Arguments:
+//		None
+//
+// Return Value:
+//		bool
+//
+//==========================================================================
+bool SourceParser::LineEndsWithContinuation(const std::string &line) const
+{
+	unsigned int i;
+	for (i = 0; i < continuationIndicators.size(); i++)
+	{
+		if (line.find(continuationIndicators[i]) ==
+			line.length() - continuationIndicators[i].length())
 			return true;
 	}
 

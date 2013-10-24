@@ -34,6 +34,13 @@ static inline std::string Trim(std::string s)
 	return LeftTrim(RightTrim(s));
 }
 
+std::string StripCarriageReturn(std::string &s)
+{
+	if (!s.empty() && *s.rbegin() == '\r')
+		s.erase(s.length() - 1);
+	return s;
+}
+
 }
 
 #endif// STRING_TRIMMER_H_

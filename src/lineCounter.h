@@ -18,7 +18,8 @@ class LineCounter
 {
 public:
 	LineCounter(const std::vector<std::string> &commentIndicators,
-		const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators);
+		const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators,
+		const std::vector<std::string> &continuationIndicators);
 
 	bool ProcessFile(std::string fileName);
 

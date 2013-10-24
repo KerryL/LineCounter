@@ -15,14 +15,16 @@ class SourceParser
 {
 public:
 	SourceParser(const std::vector<std::string> &commentIndicators,
-		const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators);
+		const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators,
+		const std::vector<std::string> &lineContinuationIndicators);
 
 	enum PositionState
 	{
 		PositionCode,
+		PositionWhitespace,
 		PositionComment,
-		PositionBlockComment,
-		PositionWhitespace
+		PositionContinuingComment,
+		PositionBlockComment
 	};
 
 	void Reset(void) { state = PositionCode; };// Reset prior to parsing a new file
@@ -31,11 +33,14 @@ public:
 private:
 	const std::vector<std::string> commentIndicators;
 	const std::vector<std::pair<std::string, std::string> > blockCommentIndicators;
+	const std::vector<std::string> continuationIndicators;
 
 	PositionState state;
 	std::string blockEndIndicator;
 
 	bool LineStartsWithSingleLineComment(const std::string &line) const;
+	bool LineContainsSingleLineComment(const std::string &line) const;
+	bool LineEndsWithContinuation(const std::string &line) const;
 	size_t LineStartsWithBlockCommentStart(const std::string &line, std::string& matchingEndIndicator) const;
 	size_t LineContainsString(const std::string &line, const std::string &s) const;
 	size_t LineContainsBlockCommentStart(const std::string &line, std::string& matchingEndIndicator) const;

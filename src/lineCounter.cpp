@@ -20,8 +20,9 @@ using namespace std;
 // Description:		Constructor for LineCounter class.
 //
 // Input Arguments:
-//		commentIndicators	= const std::vector<std::string>&
+//		commentIndicators		= const std::vector<std::string>&
 //		blockCommentIndicators	= const std::vector<std::pair<std::string, std::string> >&
+//		continuationIndicators	= const std::vector<std::string>&
 //
 // Output Arguments:
 //		None
@@ -31,8 +32,9 @@ using namespace std;
 //
 //==========================================================================
 LineCounter::LineCounter(const std::vector<std::string> &commentIndicators,
-	const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators)
-	: parser(commentIndicators, blockCommentIndicators)
+	const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators,
+	const std::vector<std::string> &continuationIndicators)
+	: parser(commentIndicators, blockCommentIndicators, continuationIndicators)
 {
 	statistics.blankLines = 0;
 	statistics.codeLines = 0;
@@ -66,6 +68,7 @@ bool LineCounter::ProcessFile(std::string fileName)
 	}
 
 	statistics.fileCount++;
+	parser.Reset();
 
 	string currentLine;
 	SourceParser::PositionState state;
@@ -73,7 +76,8 @@ bool LineCounter::ProcessFile(std::string fileName)
 	{
 		state = parser.ParseLine(currentLine);
 		if (state == SourceParser::PositionBlockComment ||
-			state == SourceParser::PositionComment)
+			state == SourceParser::PositionComment ||
+			state == SourceParser::PositionContinuingComment)
 			statistics.commentLines++;
 		else if (state == SourceParser::PositionWhitespace)
 			statistics.blankLines++;

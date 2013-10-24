@@ -5,3 +5,11 @@ Auth:  Kerry Loux
 Desc:  Configurable source code line counter.
 
 LineCounter is licensed under GPLv2.  See LICENSE file for more information.
+
+Currently, LineCounter links against wxWidgets 2.8.  Since the borrowed functionality is minimal, this dependency may be removed in the future.
+
+It has been tested under Windows and Linux.  MSVC++ 2010 project files are included.  Under Linux (with gnu toolchain), executing $make should build the executable into the bin directory.
+
+To run, a single command line argument must be provided - the path to the configuration file.  See the included configuration files (cpp.ini, java.ini, python.ini and vb.ini) for examples of how to configure the parser.
+
+The test directory contains unit tests for classes used within LineCounter.  Currently, they can be built using the test projects included in the MSVC++ solution.  They should also build under Linux, but makefiles are not provided and they have not been tested.  The test projects use the Google Test framework, and must be linked against it.

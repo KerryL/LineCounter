@@ -23,7 +23,8 @@ public:
 	// Constructor
 	Traverser(const std::vector<std::string> &extensions,
 		const std::vector<std::string> &commentIndicators,
-		const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators);
+		const std::vector<std::pair<std::string, std::string> > &blockCommentIndicators,
+		const std::vector<std::string> &continuationIndicators);
 	virtual ~Traverser() {};
 
 	virtual wxDirTraverseResult OnFile(const wxString &fileName);

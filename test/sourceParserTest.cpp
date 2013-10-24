@@ -17,7 +17,8 @@ protected:
 		std::vector<std::string> comments(1, "//");
 		std::vector<std::pair<std::string, std::string> > blockComments;
 		blockComments.push_back(std::make_pair(std::string("/*"), std::string("*/")));
-		sp = new SourceParser(comments, blockComments);
+		std::vector<std::string> lineContinuation(1, "\\");
+		sp = new SourceParser(comments, blockComments, lineContinuation);
 	};
 
 	virtual void TearDown() { delete sp; };
@@ -97,6 +98,20 @@ TEST_F(SourceParserCppStyleTest, HandlesConsecutiveBlockComments)
 		"now we're ending the comment*//*but starting a new one"));
 	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
 		"and now we end it!*/"));
+
+	EXPECT_EQ(SourceParser::PositionBlockComment, sp->ParseLine(
+		"/*Here we start a block comment"));
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"now we're ending the comment*/Code.InTheMiddle();/*but starting a new one"));
+	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
+		"and now we end it!*/"));
+
+	EXPECT_EQ(SourceParser::PositionBlockComment, sp->ParseLine(
+		"/*Here we start a block comment"));
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"now we're ending the comment*/Code./*InThe*/Middle();/*but starting a new one"));
+	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
+		"and now we end it!*/"));
 }
 
 TEST_F(SourceParserCppStyleTest, IgnoresCommentedBlockCommentStart)
@@ -117,6 +132,12 @@ TEST_F(SourceParserCppStyleTest, FindsNormalCode)
 		"nothing.SpecialGoingOn();"));
 	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
 		"i++;"));
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"   ignoreTheWhitespace++;    "));
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"   ignoreTheWhitespace++;    \\ "));
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"   ignoreTheWhitespace++;    \\"));
 }
 
 TEST_F(SourceParserCppStyleTest, FindsWhiteSpaceOutsideComment)
@@ -143,6 +164,50 @@ TEST_F(SourceParserCppStyleTest, FindsWhiteSpaceInsideComment)
 		"now we're ending the comment*/"));
 }
 
+TEST_F(SourceParserCppStyleTest, HandlesCommentContinuation)
+{
+	EXPECT_EQ(SourceParser::PositionContinuingComment, sp->ParseLine(
+		"//Here we start comment \\"));
+	EXPECT_EQ(SourceParser::PositionContinuingComment, sp->ParseLine(
+		"and continue it onto the next line \\"));
+	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
+		"and even a third line"));
+
+	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
+		"//whitespace at the end means we don't continue \\ "));
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"SoThisLine.ShouldBeCode();"));
+
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"This.Line(\"is code\");// but the next line \\"));
+	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
+		"should be a comment"));
+
+	EXPECT_EQ(SourceParser::PositionContinuingComment, sp->ParseLine(
+		"/*This.Line(\"is a comment\");*/// and so the next line \\"));
+	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
+		"should be a comment, too"));
+
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"/*This.Line(\"is code\");*/Include.ThisCode();// but the next line \\"));
+	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
+		"should be a comment"));
+
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"/*This.Line(\"is code\");*/Include.ThisCode();// but the next line \\"));
+	EXPECT_EQ(SourceParser::PositionContinuingComment, sp->ParseLine(
+		"should be a comment \\"));
+	EXPECT_EQ(SourceParser::PositionComment, sp->ParseLine(
+		"and so should this line"));
+
+	EXPECT_EQ(SourceParser::PositionContinuingComment, sp->ParseLine(
+		"// If we have only whitespace on the next line, it's not a comment \\"));
+	EXPECT_EQ(SourceParser::PositionWhitespace, sp->ParseLine(
+		"   "));
+	EXPECT_EQ(SourceParser::PositionCode, sp->ParseLine(
+		"backToRegularCode();"));
+}
+
 class SourceParserMultiCommentTokenTest : public ::testing::Test
 {
 protected:
@@ -155,7 +220,8 @@ protected:
 		std::vector<std::pair<std::string, std::string> > blockComments;
 		blockComments.push_back(std::make_pair(std::string("/*"), std::string("*/")));
 		blockComments.push_back(std::make_pair(std::string("<!--"), std::string("-->")));
-		sp = new SourceParser(comments, blockComments);
+		std::vector<std::string> lineContinuation(1, "\\");
+		sp = new SourceParser(comments, blockComments, lineContinuation);
 	};
 
 	virtual void TearDown() { delete sp; };
@@ -190,6 +256,6 @@ int main(int argc, char *argv[])
 	system("PAUSE");
 	return res;
 #else
-	return RUN_ALL_TEST();
+	return RUN_ALL_TESTS();
 #endif
 }
