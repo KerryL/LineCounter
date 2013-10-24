@@ -80,6 +80,8 @@ protected:
 	private:
 		const Type type;
 
+		bool InterpretBooleanData(const std::string &dataString) const;
+
 		union
 		{
 			bool* b;
@@ -105,9 +107,9 @@ protected:
 private:
 	static const std::string commentCharacter;
 
+	void StripCarriageReturn(std::string &s) const;
 	void SplitFieldFromData(const std::string &line, std::string &field, std::string &data);
 	void ProcessConfigItem(const std::string &field, const std::string &data);
-	bool ReadBooleanValue(const std::string &dataString) const;
 
 	std::map<std::string, ConfigItem> configItems;
 	std::map<void* const, std::string> keyMap;
